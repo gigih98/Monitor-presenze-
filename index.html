@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Monitor Presenze · AI Expert</title>
+<style>
+:root{--bg:#f5f7f6;--card:#fff;--text:#1d2d32;--muted:#617077;--line:#dfe8e7;--ok:#218267;--warn:#b87d24;--danger:#b94f4f;--accent:#247a83}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+.container{max-width:1120px;margin:auto;padding:28px 18px 55px}
+.hero{background:linear-gradient(125deg,#17363c,#275e62);color:white;border-radius:20px;padding:27px;box-shadow:0 12px 30px #17363c20;margin-bottom:18px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;opacity:.75;font-weight:700}.hero h1{font-size:34px;margin:7px 0 5px}.hero p{margin:0;opacity:.84}.hero-grid{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:center}.target{background:#ffffff16;border:1px solid #ffffff20;border-radius:18px;padding:18px}.target strong{display:block;font-size:30px}.target span{font-size:13px;opacity:.8}
+.dashboard{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 4px 16px #17363c08}
+.card-title{font-weight:750;font-size:17px}.muted{color:var(--muted);font-size:13px}.gauge-wrap{display:flex;align-items:center;gap:25px;margin-top:17px}.gauge{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--ok) 0deg,#e9edf4 0deg)}.gauge:before{content:"";position:absolute;width:132px;height:132px;background:white;border-radius:50%}.gauge-content{position:relative;text-align:center}.gauge-number{font-size:30px;font-weight:800}.gauge-label{font-size:12px;color:var(--muted)}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1}.mini{background:#f7f8fb;border-radius:14px;padding:14px}.mini .n{font-size:22px;font-weight:800;margin-top:3px}
+.alert{border-radius:17px;padding:18px;border-left:6px solid var(--ok);background:#f5fbf8}.alert.warn{border-color:var(--warn);background:#fffaf0}.alert.danger{border-color:var(--danger);background:#fff5f5}.alert-title{font-size:18px;font-weight:800}.alert-text{margin-top:5px;color:#475467;line-height:1.45}
+.big-number{font-size:42px;font-weight:850;margin:6px 0}.margin-meter{height:10px;background:#e9edf4;border-radius:99px;overflow:hidden;margin:13px 0}.margin-fill{height:100%;background:var(--accent);width:0;transition:.3s}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.btn{border:0;border-radius:11px;padding:10px 14px;cursor:pointer;font-weight:700;background:#172033;color:white}.btn.secondary{background:#e9edf4;color:#172033}.btn.danger{background:#b42318;color:white}
+.table-card{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 4px 16px #17363c08}.table-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:#f7faf9}tr:last-child td{border-bottom:0}select{padding:7px 9px;border:1px solid #cddbd9;border-radius:8px;background:white}.badge{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:750}.ok{background:#e9f8f1;color:#137a4d}.partial{background:#fff4d9;color:#8a5b00}.absent{background:#fdeaea;color:#a62d2d}
+.table-card tbody tr:nth-child(even){background:#fafcfb}.table-card tbody tr:hover{background:#eff7f5}.table-card tbody tr.today{background:#e8f5f2}.date-day{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:2px}.table-card td:nth-child(4),.table-card td:nth-child(5){font-variant-numeric:tabular-nums}
+.lab-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0}.lab-tools button{border:1px solid #cbdcda;border-radius:999px;padding:8px 12px;background:white;color:#285c61;font-weight:700;cursor:pointer}.lab-tools button.active{background:#285c61;color:white}.lab-tools input{min-width:190px;flex:1;border:1px solid #cbdcda;border-radius:9px;padding:9px;font:inherit;font-size:13px}.lab-progress{height:7px;background:#e7eeec;border-radius:20px;overflow:hidden;margin:8px 0 3px}.lab-progress span{display:block;height:100%;background:var(--accent);width:0}.timeline-date{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding:8px 1px 2px}
+.today-card{border-color:#7eb7ad;background:#fbfefd;margin-bottom:16px}.today-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.today-heading strong{font-size:19px}.today-form{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-top:14px}.today-form label{display:block;font-size:12px;font-weight:750;margin-bottom:5px}.duration{width:104px;max-width:100%;border:1px solid #bdd2ce;border-radius:9px;padding:9px 10px;background:white;font:inherit;font-size:15px;color:var(--text);font-variant-numeric:tabular-nums}.today-note{margin-top:9px;color:var(--muted);font-size:12px}.calendar-details summary{cursor:pointer;list-style:none;padding:17px 20px;font-weight:750}.calendar-details summary::-webkit-details-marker{display:none}.calendar-details summary:after{content:"＋";float:right;color:var(--accent)}.calendar-details[open] summary:after{content:"−"}.calendar-details .table-head{border-top:1px solid var(--line)}.duration:invalid{border-color:var(--danger)}
+.missing-notice{display:none;background:#fff8eb;border:1px solid #ead3a6;border-radius:10px;padding:10px 12px;margin-top:12px;font-size:13px;line-height:1.4}.missing-notice.show{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.missing-notice button{border:0;background:#8d6225;color:#fff;border-radius:8px;padding:7px 10px;font-weight:700;cursor:pointer}.table-card tr.focus-row{outline:2px solid #b87d24;outline-offset:-2px}.task.overdue{border-left-color:var(--danger);background:#fffafa}.task.today-due{border-left-color:var(--warn);background:#fffdf8}.urgency{display:inline-block;font-size:11px;font-weight:800;margin-top:5px;color:#9a6320}.urgency.late{color:#ad3838}
+.footer{font-size:12px;color:var(--muted);margin-top:14px;text-align:center}.today{background:#eef5ff}.pending{background:#eef1f6;color:#475467}.summary-line{margin-top:10px;font-size:13px;color:#475467;line-height:1.45}
+.extras{margin-bottom:16px}.extras .card{padding:20px}.task-form{display:grid;grid-template-columns:145px 1fr 1fr auto;gap:8px;align-items:end;margin:14px 0}.task-form label,.task label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.task-form input,.task textarea{width:100%;border:1px solid #cddbd9;border-radius:8px;padding:9px;font:inherit;font-size:13px;color:var(--text);background:#fff}.task-form input[type=checkbox]{width:auto;margin-right:6px}.task textarea{min-height:48px;resize:vertical}.task-list{display:grid;gap:8px}.task{border:1px solid var(--line);border-left:4px solid #aac8c7;border-radius:11px;padding:11px;background:#fff}.task-head{display:flex;justify-content:space-between;gap:10px;align-items:start}.task-title{font-weight:750}.task-date{font-size:12px;color:var(--muted)}.task-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.task-actions button{border:1px solid #cddbd9;border-radius:8px;background:white;padding:6px 9px;font-size:12px;cursor:pointer}.task.completed{background:#f7fbf9;border-left-color:var(--ok)}.task.due{border-left-color:var(--warn)}.next-step{background:#eef6f4;border-left:3px solid var(--accent);border-radius:9px;padding:12px;margin-top:12px;font-size:14px;line-height:1.45}.section-kicker{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:800;color:var(--accent);margin-bottom:5px}.quick-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.quick-nav button{font:inherit;font-size:12px;font-weight:700;color:#285c61;border:1px solid #cbdcda;background:#fff;border-radius:999px;padding:7px 11px;cursor:pointer}.quick-nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:760px){.task-form{grid-template-columns:1fr 1fr}.task-form .wide{grid-column:1/-1}}
+@media(max-width:820px){.hero-grid,.dashboard{grid-template-columns:1fr}.gauge-wrap{align-items:flex-start}.hero h1{font-size:28px}}
+@media(max-width:560px){.gauge-wrap{flex-direction:column;align-items:center}.stats{width:100%}.container{padding:16px 12px 40px}}
+@media(max-width:700px){.table-card{background:transparent;border:0;box-shadow:none;overflow:visible}.table-card .table-head{background:white;border:1px solid var(--line);border-radius:13px;margin-bottom:8px;padding:14px}.table-card>div:last-child{overflow:visible!important}.table-card table,.table-card tbody,.table-card tr,.table-card td{display:block;width:100%;min-width:0}.table-card thead{display:none}.table-card tr{background:white!important;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px}.table-card tr.today{border-color:#77bcb0;background:#f1faf7!important}.table-card td{border:0;padding:4px 2px;font-size:13px}.table-card td:first-child{grid-column:1/-1;border-bottom:1px solid var(--line);padding-bottom:8px}.table-card td:last-child{grid-column:1/-1}.table-card td:not(:first-child):before{content:attr(data-label);display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}.table-card .duration{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+<section class="hero">
+ <div class="hero-grid">
+  <div><div class="eyebrow">Il mio quaderno di bordo</div><h1>AI Expert</h1><p>Presenze, pratica e consegne · 21 settembre – 20 ottobre 2026</p></div>
+  <div class="target"><span>Obiettivo minimo</span><strong>70%</strong><span>di frequenza</span></div>
+ </div>
+</section>
+<nav class="quick-nav" aria-label="Sezioni"><button type="button" data-target="oggi">Oggi</button><button type="button" data-target="frequenza">Frequenza</button><button type="button" data-target="laboratorio">Laboratorio</button><button type="button" data-target="calendario">Giorni precedenti</button></nav>
+
+<section class="card today-card" id="oggi">
+ <div class="section-kicker">Inserimento rapido</div>
+ <div class="today-heading"><strong id="todayDate">Oggi</strong><span class="badge pending" id="todayState">Da compilare</span></div>
+ <form class="today-form" id="todayForm">
+  <div><label for="todayM">Mattina · 9–13</label><input class="duration" id="todayM" inputmode="numeric" placeholder="ore:minuti" aria-label="Ore e minuti frequentati oggi al mattino"></div>
+  <div><label for="todayP">Pomeriggio · 14–18</label><input class="duration" id="todayP" inputmode="numeric" placeholder="ore:minuti" aria-label="Ore e minuti frequentati oggi al pomeriggio"></div>
+  <button class="btn" type="submit">Salva oggi</button>
+ </form>
+ <div class="today-note" id="todayNote">Scrivi per esempio 03:47 se hai frequentato 3 ore e 47 minuti. Usa 00:00 per un'assenza; lascia vuoto ciò che devi ancora compilare.</div>
+ <div class="missing-notice" id="missingNotice"><span id="missingText"></span><button type="button" id="openMissing">Apri la data</button></div>
+</section>
+
+<section class="dashboard" id="frequenza">
+ <div class="card">
+  <div class="card-title">La tua frequenza</div>
+  <div class="muted">Ore registrate dal 21 settembre. La percentuale sul corso completo cresce durante il corso.</div>
+  <div class="gauge-wrap">
+   <div class="gauge" id="gauge"><div class="gauge-content"><div class="gauge-number" id="pct">0%</div><div class="gauge-label">frequenza</div></div></div>
+   <div class="stats">
+    <div class="mini"><div class="muted">Ore frequentate</div><div class="n" id="attended">0 h</div></div>
+    <div class="mini"><div class="muted">Ore totali</div><div class="n" id="total">176 h</div></div>
+    <div class="mini"><div class="muted">Giorni di corso</div><div class="n">22</div></div>
+    <div class="mini"><div class="muted">Soglia richiesta</div><div class="n">123,2 h</div></div>
+   </div>
+  </div>
+ </div>
+
+ <div class="card">
+  <div class="card-title">Ore di assenza a disposizione</div>
+  <div class="muted">Tempo che puoi ancora perdere restando almeno al 70% finale.</div>
+  <div class="big-number" id="remaining">52 h 48 min</div>
+  <div style="background:#f7f8fb;border-radius:12px;padding:12px;margin-top:8px;font-size:13px;color:#475467">
+   <b>Esempio:</b> se hai <b>6 ore</b> disponibili e registri <b>1 ora di assenza</b>, diventeranno automaticamente <b>5 ore</b>.
+  </div>
+  <div class="margin-meter"><div class="margin-fill" id="marginFill"></div></div>
+  <div class="muted" id="marginText">Il margine verrà aggiornato con le tue presenze.</div>
+  <div class="summary-line" id="pastSummary"></div>
+  <div style="height:16px"></div>
+  <div id="alert" class="alert">
+   <div class="alert-title" id="alertTitle">🟢 SEI SOPRA IL 70%</div>
+   <div class="alert-text" id="alertText">Registra le tue ore per vedere il margine reale.</div>
+  </div>
+ </div>
+</section>
+
+<section class="extras" id="laboratorio" aria-label="Laboratorio personale">
+ <div class="card">
+  <div class="section-kicker">Laboratorio personale</div>
+  <div class="card-title">Dalla teoria alla pratica</div>
+  <div class="muted">Aggiungi la pratica assegnata ogni giorno. Una volta finita, resta in evidenza fino alla consegna sul sito. Gli elaborati completi restano nel progetto AI Expert. <a href="https://fad.daminasrl.it/" target="_blank" rel="noopener noreferrer">Apri la piattaforma del corso</a>.</div>
+  <form class="task-form" id="taskForm">
+   <div><label for="taskDate">Data</label><input type="date" id="taskDate" required></div>
+   <div class="wide"><label for="taskTitle">Attività assegnata</label><input id="taskTitle" maxlength="120" placeholder="Es. esercizio sui prompt" required></div>
+   <div class="wide"><label for="taskNext">Prossimo passo</label><input id="taskNext" maxlength="180" placeholder="Es. completare l'esempio" required></div>
+   <div><label for="taskDue">Scadenza (se prevista)</label><input type="date" id="taskDue"></div>
+   <button class="btn" type="submit">Aggiungi</button>
+  </form>
+  <div class="next-step" id="taskSummary" aria-live="polite"></div>
+  <div class="lab-tools" aria-label="Vista laboratorio">
+   <button type="button" id="viewOpen" class="active">Da seguire</button>
+   <button type="button" id="viewHistory">Il mio percorso</button>
+   <input type="search" id="taskSearch" placeholder="Cerca un'attività passata" aria-label="Cerca nelle attività">
+  </div>
+  <div class="muted" id="labProgressText"></div><div class="lab-progress" aria-hidden="true"><span id="labProgressFill"></span></div>
+  <div class="task-list" id="taskList"></div>
+  <div class="muted" style="margin-top:9px">Puoi aggiungere in ogni attività un breve collegamento tra il concetto studiato e il suo uso pratico. Le note si salvano nel browser su questo dispositivo.</div>
+ </div>
+</section>
+
+<section class="table-card" id="calendario">
+ <details class="calendar-details" id="calendarDetails">
+ <summary>Apri il calendario completo per correggere un altro giorno</summary>
+ <div class="table-head">
+  <div><div class="section-kicker">Registro quotidiano</div><div class="card-title">Calendario presenze</div><div class="muted">Inserisci ore e minuti frequentati, per esempio 03:30 se hai perso mezz'ora. 00:00 significa assenza; campo vuoto significa da compilare.</div></div>
+ </div>
+ <div style="overflow:auto">
+ <table><thead><tr><th>Data</th><th>Mattina</th><th>Pomeriggio</th><th>Ore</th><th>Assenza</th><th>Stato</th></tr></thead><tbody id="rows"></tbody></table>
+ </div>
+ <div class="actions" style="padding:0 18px 12px"><button class="btn secondary" onclick="exportData()">Esporta CSV</button><button class="btn danger" onclick="resetData()">Cancella presenze</button></div>
+ </details>
+</section>
+<div class="footer"><span id="syncState">Collegamento a Drive in corso…</span></div>
+</div>
+
+<script>
+const dates=[
+"2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25",
+"2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02",
+"2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09",
+"2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16",
+"2026-10-19","2026-10-20"];
+const TOTAL=176, TOTAL_MIN=TOTAL*60, MIN_MIN=Math.ceil(TOTAL_MIN*.70), MAXABS_MIN=TOTAL_MIN-MIN_MIN;
+const KEY="ai_expert_presenze_v2";
+let cloudReady=false, cloudSaving=false, cloudDirty=false, cloudTimer;
+function syncLabel(message){document.getElementById("syncState").textContent=message}
+function queueSync(){if(!cloudReady)return;cloudDirty=true;syncLabel("Modifiche in attesa di salvataggio su Drive…");clearTimeout(cloudTimer);cloudTimer=setTimeout(flushSync,700)}
+function flushSync(){if(!cloudReady||cloudSaving||!cloudDirty)return;cloudDirty=false;cloudSaving=true;const snapshot={data:JSON.parse(JSON.stringify(data)),tasks:JSON.parse(JSON.stringify(tasks))};syncLabel("Salvataggio su Drive…");google.script.run.withSuccessHandler(()=>{cloudSaving=false;syncLabel(cloudDirty?"Modifiche in attesa di salvataggio su Drive…":"✓ Aggiornato su Drive");if(cloudDirty)flushSync()}).withFailureHandler(error=>{cloudSaving=false;cloudDirty=true;syncLabel("Salvataggio non riuscito. Riprovo alla prossima modifica; conserva questa pagina aperta.");console.error(error)}).saveState(snapshot)}
+let data;try{data=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch{data={}}
+document.querySelector(".quick-nav").addEventListener("click",event=>{const button=event.target.closest("button[data-target]");if(!button)return;const id=button.dataset.target;if(id==="calendario")document.getElementById("calendarDetails").open=true;document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"})});
+const TASKKEY="ai_expert_pratiche_2026";
+let tasks;try{tasks=JSON.parse(localStorage.getItem(TASKKEY)||"[]");if(!Array.isArray(tasks))tasks=[]}catch{tasks=[]}
+// Conserva eventuali note già scritte nella precedente versione settimanale.
+if(!localStorage.getItem(TASKKEY)){try{const older=JSON.parse(localStorage.getItem("ai_expert_applicazioni_2026")||"{}");Object.entries(older).forEach(([date,v])=>{const note=typeof v==="string"?{application:v}:v;if(note?.application||note?.next)tasks.push({id:date,date,title:"Applicazione pratica della settimana",next:note.next||"",application:note.application||"",done:note.status==="completato"})})}catch{}}
+tasks.forEach(t=>t.submit=true);
+function saveTasks(){localStorage.setItem(TASKKEY,JSON.stringify(tasks));queueSync()}
+saveTasks();
+function urgencyLevel(t){if(t.delivered||!t.due)return 2;return t.due<localToday()?0:t.due===localToday()?1:2}
+const taskDate=document.getElementById("taskDate");taskDate.value=localToday();
+let taskView="open";
+document.getElementById("viewOpen").addEventListener("click",()=>{taskView="open";document.getElementById("taskSearch").value="";renderTasks()});
+document.getElementById("viewHistory").addEventListener("click",()=>{taskView="history";renderTasks()});
+document.getElementById("taskSearch").addEventListener("input",()=>{taskView="history";renderTasks()});
+document.getElementById("taskForm").addEventListener("submit",e=>{e.preventDefault();const title=document.getElementById("taskTitle"),next=document.getElementById("taskNext"),due=document.getElementById("taskDue");tasks.push({id:String(Date.now())+Math.random(),date:taskDate.value,title:title.value.trim(),next:next.value.trim(),due:due.value,submit:true,delivered:false,application:"",done:false});saveTasks();title.value="";next.value="";due.value="";renderTasks();title.focus()});
+function renderTasks(){const open=tasks.filter(t=>!t.done),toDeliver=tasks.filter(t=>t.done&&!t.delivered),pending=[...open,...toDeliver].sort((a,b)=>urgencyLevel(a)-urgencyLevel(b)||(a.due||a.date).localeCompare(b.due||b.date));
+ const late=pending.filter(t=>urgencyLevel(t)===0).length,todayDue=pending.filter(t=>urgencyLevel(t)===1).length;
+ document.getElementById("taskSummary").textContent=[late?`${late} ${late===1?"consegna scaduta":"consegne scadute"}`:"",todayDue?`${todayDue} ${todayDue===1?"consegna oggi":"consegne oggi"}`:"",open.length?`${open.length} ${open.length===1?"lavoro da finire":"lavori da finire"}`:"",toDeliver.length?`${toDeliver.length} ${toDeliver.length===1?"lavoro da consegnare":"lavori da consegnare"}`:""].filter(Boolean).join(" · ")||"Nessun lavoro in sospeso. Aggiungi la pratica di oggi quando viene assegnata.";
+ const delivered=tasks.filter(t=>t.delivered).length;document.getElementById("labProgressText").textContent=`${delivered} attività consegnate su ${tasks.length} registrate · il percorso conserva anche quelle concluse`;document.getElementById("labProgressFill").style.width=(tasks.length?delivered/tasks.length*100:0)+"%";
+ document.getElementById("viewOpen").classList.toggle("active",taskView==="open");document.getElementById("viewHistory").classList.toggle("active",taskView==="history");
+ const search=document.getElementById("taskSearch").value.trim().toLocaleLowerCase("it");
+ let visible=taskView==="open"?pending:[...tasks].sort((a,b)=>a.date.localeCompare(b.date));
+ if(search)visible=visible.filter(t=>[t.title,t.next,t.application,t.date].some(v=>String(v||"").toLocaleLowerCase("it").includes(search)));
+ const list=document.getElementById("taskList");list.replaceChildren();
+ if(!visible.length){const empty=document.createElement("div");empty.className="muted";empty.textContent=search?"Nessuna attività trovata.":taskView==="open"?"Nessuna attività da seguire. Apri “Il mio percorso” per rivedere quelle già consegnate.":"Il percorso si costruirà con le attività che aggiungi.";list.appendChild(empty)}
+ let previousDate="";
+ visible.forEach(t=>{if(taskView==="history"&&t.date!==previousDate){const dateHead=document.createElement("div");dateHead.className="timeline-date";dateHead.textContent=fmt(t.date);list.appendChild(dateHead);previousDate=t.date}
+ const urgency=urgencyLevel(t),box=document.createElement("div");box.className="task"+(t.done?" completed":"")+(urgency===0?" overdue":urgency===1?" today-due":t.done&&!t.delivered?" due":"");const head=document.createElement("div");head.className="task-head";const name=document.createElement("div");name.className="task-title";name.textContent=t.title;const date=document.createElement("span");date.className="task-date";date.textContent=fmt(t.date)+(t.due?" · consegna entro "+fmt(t.due):"")+(t.delivered?" · consegnato":t.done?" · da consegnare":" · in lavorazione");head.append(name,date);
+ if(urgency<2){const flag=document.createElement("div");flag.className="urgency"+(urgency===0?" late":"");flag.textContent=urgency===0?"Scadenza superata · da consegnare":"Consegna oggi";box.appendChild(flag)}
+ const stepLabel=document.createElement("label");stepLabel.textContent="Prossimo passo";const step=document.createElement("textarea");step.value=t.next||"";step.placeholder="Cosa manca per finire?";step.addEventListener("input",()=>{t.next=step.value;saveTasks()});
+ const appLabel=document.createElement("label");appLabel.textContent="Cosa ho applicato (facoltativo)";const app=document.createElement("textarea");app.value=t.application||"";app.placeholder="Il concetto studiato e come l'ho usato";app.addEventListener("input",()=>{t.application=app.value;saveTasks()});
+ const actions=document.createElement("div");actions.className="task-actions";const toggle=document.createElement("button");toggle.type="button";toggle.textContent=t.done?"Riapri":"Segna completato";toggle.addEventListener("click",()=>{t.done=!t.done;if(!t.done)t.delivered=false;saveTasks();renderTasks()});actions.appendChild(toggle);
+ if(t.submit&&t.done){const delivery=document.createElement("button");delivery.type="button";delivery.textContent=t.delivered?"Annulla consegna":"Segna consegnato";delivery.addEventListener("click",()=>{t.delivered=!t.delivered;saveTasks();renderTasks()});actions.appendChild(delivery)}
+ const remove=document.createElement("button");remove.type="button";remove.textContent="Elimina";remove.addEventListener("click",()=>{if(confirm("Vuoi eliminare questa attività?")){tasks=tasks.filter(x=>x.id!==t.id);saveTasks();renderTasks()}});actions.appendChild(remove);box.append(head,stepLabel,step,appLabel,app,actions);list.appendChild(box)})}
+renderTasks();
+function fmt(s){const [y,m,d]=s.split("-");return `${d}/${m}/${y}`}
+function localToday(){const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`}
+function val(d,p){return data[d]?.[p]??""}
+function entered(d,p){return val(d,p)!==""}
+function complete(d){return entered(d,"m")&&entered(d,"p")}
+function sessionMinutes(d,p){return entered(d,p)?Math.round(Number(val(d,p))*60):0}
+function attendedDay(d){return sessionMinutes(d,"m")+sessionMinutes(d,"p")}
+function absentDay(d){return (entered(d,"m")?240-sessionMinutes(d,"m"):0)+(entered(d,"p")?240-sessionMinutes(d,"p"):0)}
+function duration(n){const h=Math.floor(n/60),m=n%60;return h+" h"+(m?" "+String(m).padStart(2,"0")+" min":"")}
+function clock(n){return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
+function parseDuration(s){if(!s.trim())return null;const match=/^0?([0-4]):([0-5][0-9])$/.exec(s.trim());if(!match)return NaN;const mins=Number(match[1])*60+Number(match[2]);return mins<=240?mins:NaN}
+function field(d,p){return `<input class="duration" inputmode="numeric" aria-label="${p==="m"?"Mattina":"Pomeriggio"} ${fmt(d)} in ore e minuti" placeholder="ore:minuti" value="${entered(d,p)?clock(sessionMinutes(d,p)):""}" onchange="setVal('${d}','${p}',this.value)">`}
+function setVal(d,p,s){const mins=parseDuration(s);if(Number.isNaN(mins)){alert("Inserisci ore:minuti da 00:00 a 04:00, per esempio 03:47.");render();return}data[d]??={};if(mins===null)delete data[d][p];else data[d][p]=Number((mins/60).toFixed(8));if(!Object.keys(data[d]).length)delete data[d];localStorage.setItem(KEY,JSON.stringify(data));queueSync();render()}
+document.getElementById("todayForm").addEventListener("submit",e=>{e.preventDefault();const d=localToday();if(!dates.includes(d))return;const m=parseDuration(document.getElementById("todayM").value),p=parseDuration(document.getElementById("todayP").value);if(Number.isNaN(m)||Number.isNaN(p)){alert("Inserisci ore:minuti da 00:00 a 04:00, per esempio 03:47.");return}data[d]??={};for(const [part,mins] of [["m",m],["p",p]]){if(mins===null)delete data[d][part];else data[d][part]=Number((mins/60).toFixed(8))}if(!Object.keys(data[d]).length)delete data[d];localStorage.setItem(KEY,JSON.stringify(data));queueSync();render();document.getElementById("todayNote").textContent="Presenze di oggi salvate. Puoi correggerle qui in qualsiasi momento."});
+function renderToday(){const d=localToday(),active=dates.includes(d);document.getElementById("todayDate").textContent=active?"Oggi · "+new Intl.DateTimeFormat("it-IT",{weekday:"long",day:"numeric",month:"long"}).format(new Date(d+"T12:00:00")):"Oggi non è prevista lezione";document.getElementById("todayM").value=active&&entered(d,"m")?clock(sessionMinutes(d,"m")):"";document.getElementById("todayP").value=active&&entered(d,"p")?clock(sessionMinutes(d,"p")):"";document.querySelectorAll("#todayForm input,#todayForm button").forEach(el=>el.disabled=!active);const badge=document.getElementById("todayState");badge.textContent=!active?"Nessuna lezione":complete(d)?"Registrato":entered(d,"m")||entered(d,"p")?"Parziale":"Da compilare";badge.className="badge "+(complete(d)?"ok":"pending")}
+function render(){
+ const rows=document.getElementById("rows");rows.innerHTML="";
+ dates.forEach(d=>{
+  const done=complete(d),h=attendedDay(d),a=absentDay(d),partly=entered(d,"m")||entered(d,"p");
+  const state=!done?'<span class="badge pending">'+(partly?"Da completare":"Da compilare")+'</span>':h===480?'<span class="badge ok">✓ Presente</span>':h===0?'<span class="badge absent">× Assente</span>':'<span class="badge partial">◐ Parziale</span>';
+  const tr=document.createElement("tr");
+  tr.id="row-"+d;tr.tabIndex=-1;
+  if(d===localToday())tr.className="today";
+  const weekday=new Intl.DateTimeFormat("it-IT",{weekday:"long"}).format(new Date(d+"T12:00:00"));
+  tr.innerHTML=`<td><b>${fmt(d)}${d===localToday()?" · oggi":""}</b><span class="date-day">${weekday}</span></td>
+  <td data-label="Mattina 9–13">${field(d,"m")}</td><td data-label="Pomeriggio 14–18">${field(d,"p")}</td>
+  <td data-label="Frequentate"><b>${partly?duration(h):"—"}</b></td><td data-label="Assenza">${partly?duration(a):"—"}</td><td data-label="Stato">${state}</td>`;
+  rows.appendChild(tr);
+ });
+ renderToday();renderMissing();update();
+}
+let firstMissingDate="";
+function renderMissing(){const missing=dates.filter(d=>d<localToday()&&!complete(d));firstMissingDate=missing[0]||"";const box=document.getElementById("missingNotice");box.classList.toggle("show",!!firstMissingDate);document.getElementById("missingText").textContent=firstMissingDate?`${missing.length} ${missing.length===1?"giornata passata da completare":"giornate passate da completare"}. Prima: ${fmt(firstMissingDate)}.`:""}
+document.getElementById("openMissing").addEventListener("click",()=>{if(!firstMissingDate)return;document.getElementById("calendarDetails").open=true;const row=document.getElementById("row-"+firstMissingDate);row.classList.add("focus-row");row.scrollIntoView({behavior:"smooth",block:"center"});row.focus({preventScroll:true})});
+function update(){
+ const attended=dates.reduce((s,d)=>s+attendedDay(d),0);
+ const pct=attended/TOTAL_MIN*100;
+ const absence=dates.reduce((s,d)=>s+absentDay(d),0);
+ const margin=MAXABS_MIN-absence;
+ const missing=dates.filter(d=>d<localToday()&&!complete(d)).length;
+ const finished=dates.filter(d=>complete(d)).length;
+
+ document.getElementById("attended").textContent=duration(attended);
+ document.getElementById("pct").textContent=pct.toFixed(1)+"%";
+ document.getElementById("remaining").textContent=duration(Math.max(0,margin));
+ document.getElementById("pastSummary").textContent=`Dal 21 settembre: ${duration(attended)} frequentate, ${duration(absence)} di assenza registrate. ${missing} giornate passate da completare.`;
+
+ const deg=Math.min(100,pct)*3.6;
+ const gaugeColor=margin<0?'var(--danger)':margin<=480?'var(--warn)':'var(--ok)';
+ document.getElementById("gauge").style.background=
+   `conic-gradient(${gaugeColor} ${deg}deg,#e9edf4 ${deg}deg)`;
+
+ document.getElementById("marginFill").style.width=
+   (MAXABS_MIN?Math.min(100,Math.max(0,margin)/MAXABS_MIN*100):0)+"%";
+ document.getElementById("marginText").textContent=`${finished} giornate complete su 22 · soglia finale ${duration(MIN_MIN)} · assenze consentite ${duration(MAXABS_MIN)}.`;
+
+ const box=document.getElementById("alert");
+ const title=document.getElementById("alertTitle");
+ const text=document.getElementById("alertText");
+ box.className="alert";
+
+ if(margin<0){
+   box.classList.add("danger");
+   title.textContent="🔴 LIMITE DI ASSENZE SUPERATO";
+   text.textContent=`Hai superato il limite di ${duration(MAXABS_MIN)} di ${duration(-margin)}.`;
+ } else if(missing){
+   box.classList.add("warn");
+   title.textContent="🟠 DATI DA COMPLETARE";
+   text.textContent=`Il margine di ${duration(margin)} è provvisorio: compila le ${missing} giornate passate mancanti per conoscere le assenze ancora possibili.`;
+ } else if(margin<=480){
+   box.classList.add("warn");
+   title.textContent="🟠 ATTENZIONE";
+   text.textContent=`Hai ancora ${duration(margin)} di assenza disponibili. Ogni minuto perso riduce questo margine di un minuto.`;
+ } else {
+   title.textContent="🟢 ORE DI ASSENZA DISPONIBILI";
+   text.textContent=`Puoi ancora assentarti per ${duration(margin)} fino al 20 ottobre, restando almeno al 70% finale.`;
+ }
+}
+function resetData(){if(confirm("Vuoi cancellare tutte le presenze registrate?")){data={};localStorage.removeItem(KEY);queueSync();render()}}
+function exportData(){
+ let out="Data;Mattina;Pomeriggio;Ore frequentate;Ore assenza;Stato\n";dates.forEach(d=>out+=`${fmt(d)};${entered(d,"m")?clock(sessionMinutes(d,"m")):""};${entered(d,"p")?clock(sessionMinutes(d,"p")):""};${entered(d,"m")||entered(d,"p")?clock(attendedDay(d)):""};${entered(d,"m")||entered(d,"p")?clock(absentDay(d)):""};${complete(d)?"Registrato":"Da completare"}\n`);
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([out],{type:"text/csv;charset=utf-8"}));a.download="presenze_ai_expert.csv";a.click();
+}
+render();
+if(typeof google!=="undefined"&&google.script&&google.script.run){
+ syncLabel("Caricamento dati da Drive…");
+ google.script.run.withSuccessHandler(remote=>{
+  if(remote&&remote.initialized){data=remote.data||{};tasks=Array.isArray(remote.tasks)?remote.tasks:[];localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(TASKKEY,JSON.stringify(tasks));cloudReady=true;render();renderTasks();syncLabel("✓ Collegato a Drive")}
+  else{cloudReady=true;queueSync();syncLabel("Prima sincronizzazione con Drive…")}
+ }).withFailureHandler(error=>{syncLabel("Drive non disponibile: le modifiche resteranno su questo dispositivo finché non riapri l’app.");console.error(error)}).getState();
+}else syncLabel("Questa copia non è collegata a Drive: apri il link dell’app pubblicata con Google Apps Script.");
+</script>
+</body>
+</html>
